@@ -3,8 +3,8 @@ var urlLeader = "http://localhost:8080/api/leaderboard"
 var app = new Vue({
     el:'#app',
     data:{
-        login: "false",
-        user:"",
+        player: "",
+        gpId:[],
         games:[],
         scores:[],
     }
@@ -25,6 +25,7 @@ fetch(url)
 .then(function(myData){
     data = myData;
     app.games = data.games;
+    app.player = data.player;
     done();
 })
 
@@ -34,20 +35,22 @@ function done(){
     table.innerHTML="";
     var tableContent = createTableContent(app.games);
     table.innerHTML = tableContent;
+    changeForm(app.player);
+    console.log(app.games);
 }
 //crear el contenido de la tabla
 function createTableContent(games){
-    var table = '<thead class="thead"><tr><th>DateGame</th><th>Player1</th><th>Player2</th><th>Winner</th></tr></thead>';
+    var table = '<thead class="thead"><tr><th>DateGame</th><th>Player1</th><th>Player2</th><th>Join</th></tr></thead>';
     table +='<tbody>';
     games.forEach(function(game){
         table += '<tr>';
         table += '<td>'+new Date(game.created).toLocaleString()+'</td>';
-        if(game.gamePlayers[0] === null){
+        if(game.gamePlayers[0] == null){
             table += '<td>'+"N/A"+'</td>';
         }else{
             table += '<td>'+game.gamePlayers[0].player.email+'</td>';
         }
-        if(game.gamePlayers[1] === null){
+        if(game.gamePlayers[1] == null){
             table += '<td>'+"N/A"+'</td>';
         }else{
             table += '<td>'+game.gamePlayers[1].player.email+'</td>';
@@ -63,8 +66,7 @@ $("#loginButton").click(
     function(){
         data ={username: document.forms['loginForm'].elements['username'].value, 
                 password: document.forms['loginForm'].elements['password'].value};
-        login(data, 'true');
-        $("#loginForm").hide();
+        login(data);
     }
 )
 
@@ -73,7 +75,7 @@ $("#logoutButton").click(
         $.post("/api/logout")
         .done(function(){
             location.reload();
-            $("#logoutForm").hide();
+            //$("#logoutForm").hide();
         })
     }
 )
@@ -81,14 +83,20 @@ $("#signinButton").click(
     function(){
         data = {username: document.forms['loginForm'].elements['username'].value,
                 password: document.forms['loginForm'].elements['password'].value};
-        signin();
+        $.post("/api/players", data)
+        .done(function(){
+            login(data);
+        })
+        .fail(function(){
+            alert("Username already exists");
+        })
     }
 )
 
-function login(data, newStatus){
+function login(data){
     $.post("/api/login", data)
     .done(function(){
-        app.login = newStatus;
+        location.reload();
         
     })
     .fail(function(){
@@ -97,26 +105,48 @@ function login(data, newStatus){
     })
 }
 
-function signin(data){
+/*function signin(data){
     $.post("/api/players", data)
     .done(function(){
+        login(data);
         location.reload();
     })
     .fail(function(){
         alert("Username already exists");
     })
-}
+}*/
 
-function doSomething(){
+/*function doSomething(){
     alert("Haciendo algo");
-}
+}*/
 
 function createNewGame(){
     $.post("/api/games")
     .done(function(){
         alert("Game created");
+        location.reload();
+        fetch("/api/games")
+        .then(function(myData){
+            return myData.json();
+        })
+        .then(function(myData){
+            data = myData;
+            console.log(data);
+            app.gpId = data;
+        })
+        
+        //window.location.replace("/web/game.html?gp=11");
     })
     .fail(function(){
         alert("error creating game");
     })
+}
+function changeForm(player){
+    if(player == null){
+        $('#loginForm').show();
+        $('#logoutForm').hide();
+    }else{
+        $('#loginForm').hide();
+        $('#logoutForm').show();
+    }
 }

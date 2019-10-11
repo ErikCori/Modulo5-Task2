@@ -53,9 +53,8 @@ public class SalvoApplication {
 			Player player2 = new Player("c.obrian@ctu.gov", passwordEncoder().encode("42"));
 			Player player3 = new Player("kim_bauer@gmail.com", passwordEncoder().encode("kb"));
 			Player player4 = new Player("t.almeida@ctu.gov", passwordEncoder().encode("mole"));
-			Player player5 = new Player("null", passwordEncoder().encode("null"));
 
-			playerRepository.saveAll(Arrays.asList(player1, player2, player3, player4, player5));
+			playerRepository.saveAll(Arrays.asList(player1, player2, player3, player4));
 			//save a couple of games
 
 			Game game1 = new Game(1);
@@ -81,14 +80,12 @@ public class SalvoApplication {
 			GamePlayer gamePlayer9 = new GamePlayer(game5, player4);
 			GamePlayer gamePlayer10 = new GamePlayer(game5, player1);
 			GamePlayer gamePlayer11 = new GamePlayer(game6, player3);
-			GamePlayer gamePlayer12 = new GamePlayer(game6, player5);
-			GamePlayer gamePlayer13 = new GamePlayer(game7, player4);
-			GamePlayer gamePlayer14 = new GamePlayer(game7, player5);
-			GamePlayer gamePlayer15 = new GamePlayer(game8, player3);
-			GamePlayer gamePlayer16 = new GamePlayer(game8, player4);
+			GamePlayer gamePlayer12 = new GamePlayer(game7, player4);
+			GamePlayer gamePlayer13 = new GamePlayer(game8, player3);
+			GamePlayer gamePlayer14 = new GamePlayer(game8, player4);
 
 			gamePlayerRepository.saveAll(Arrays.asList(gamePlayer1, gamePlayer2, gamePlayer3, gamePlayer4, gamePlayer5, gamePlayer6, gamePlayer7, gamePlayer8,
-										gamePlayer9, gamePlayer10, gamePlayer11, gamePlayer12, gamePlayer13, gamePlayer14, gamePlayer15, gamePlayer16));
+										gamePlayer9, gamePlayer10, gamePlayer11, gamePlayer12, gamePlayer13, gamePlayer14));
 
 			//Save a couple of ships
 			String carrier = "Carrier";
@@ -120,10 +117,10 @@ public class SalvoApplication {
 			Ship ship21 = new Ship(gamePlayer10, patrolBoat, Arrays.asList("G6", "H6"));
 			Ship ship22 = new Ship(gamePlayer11, destroyer, Arrays.asList("B5", "C5", "D5"));
 			Ship ship23 = new Ship(gamePlayer11, patrolBoat, Arrays.asList("C6", "C7"));
-			Ship ship24 = new Ship(gamePlayer15, destroyer, Arrays.asList("B5", "C5", "D5"));
-			Ship ship25 = new Ship(gamePlayer15, patrolBoat, Arrays.asList("C6", "C7"));
-			Ship ship26 = new Ship(gamePlayer16, submarine, Arrays.asList("A2", "A3", "A4"));
-			Ship ship27 = new Ship(gamePlayer16, patrolBoat, Arrays.asList("G6", "H6"));
+			Ship ship24 = new Ship(gamePlayer13, destroyer, Arrays.asList("B5", "C5", "D5"));
+			Ship ship25 = new Ship(gamePlayer13, patrolBoat, Arrays.asList("C6", "C7"));
+			Ship ship26 = new Ship(gamePlayer14, submarine, Arrays.asList("A2", "A3", "A4"));
+			Ship ship27 = new Ship(gamePlayer14, patrolBoat, Arrays.asList("G6", "H6"));
 
 			shipRepository.saveAll(Arrays.asList(ship1, ship2, ship3, ship4, ship5, ship6, ship7, ship8, ship9,
 					                             ship10, ship11, ship12, ship13, ship14, ship15, ship16, ship17, ship18,

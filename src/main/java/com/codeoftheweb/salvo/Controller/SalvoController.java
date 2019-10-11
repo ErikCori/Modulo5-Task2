@@ -40,7 +40,7 @@ public class SalvoController {
         if(!isGuest(authentication)){
             dto.put("player", playerRepository.findByUsername(authentication.getName()).makePlayerDto());
         }else{
-            dto.put("player", "Guest");
+            dto.put("player", null);
         }
         dto.put("games", gameRepository.findAll().stream().map(game -> game.makeGameDto()).collect(Collectors.toList()));
         return dto;

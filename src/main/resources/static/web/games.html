@@ -13,7 +13,7 @@
     <div id="app">
         <h1 class="text-center">Salvo!!!!!</h1>
         <div class="text-right bg-info">
-            <div v-show="login == 'false'">
+            <div>
                 <form method="POST" action="" id="loginForm">
                     <label>Username:<br><input placeholder="Username" type="text" name="username" required><br></label>
                     <label>Password:<br><input placeholder="Password" type="password" name="password" required><br></label>
@@ -21,7 +21,7 @@
                     <button type="button" id="signinButton">Sign in</button>
                 </form>
             </div>
-            <div v-show="login == 'true'">
+            <div>
                 <form method="POST" action="" id="logoutForm">
                     <label>Logged IN!!</label>
                     <button type="button" id="logoutButton">Logout</button>
