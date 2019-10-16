@@ -40,7 +40,7 @@ function done(){
 }
 //crear el contenido de la tabla
 function createTableContent(games){
-    var table = '<thead class="thead"><tr><th>DateGame</th><th>Player1</th><th>Player2</th><th>Join</th></tr></thead>';
+    var table = '<thead class="thead"><tr><th>DateGame</th><th>Player1</th><th>Player2</th><th>Status</th></tr></thead>';
     table +='<tbody>';
     games.forEach(function(game){
         table += '<tr>';
@@ -55,7 +55,12 @@ function createTableContent(games){
         }else{
             table += '<td>'+game.gamePlayers[1].player.email+'</td>';
         }
-        table += '<td></td>';
+        if(game.gamePlayers[0]== null || game.gamePlayers[1]==null){
+            table += '<td><button type="button">Join</button></td>';
+        }
+        else{
+            table += '<td><button type="button">Results</button></td>';
+        }
         table += '</tr>';
     });
     table += '</tbody>';
@@ -125,16 +130,6 @@ function createNewGame(){
     .done(function(){
         alert("Game created");
         location.reload();
-        fetch("/api/games")
-        .then(function(myData){
-            return myData.json();
-        })
-        .then(function(myData){
-            data = myData;
-            console.log(data);
-            app.gpId = data;
-        })
-        
         //window.location.replace("/web/game.html?gp=11");
     })
     .fail(function(){

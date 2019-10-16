@@ -106,7 +106,7 @@ public class SalvoController {
             return new ResponseEntity<>(makeMap("Error:", "No player logged in"), HttpStatus.UNAUTHORIZED);
         }
         Player player = playerRepository.findByUsername(authentication.getName());
-        Game newGame = gameRepository.save(new Game());
+        Game newGame = gameRepository.save(new Game(0));
         GamePlayer newGamePlayer = gamePlayerRepository.save(new GamePlayer(newGame, player));
         return new ResponseEntity<>(makeMap("gpid:", newGamePlayer.getId()),HttpStatus.CREATED);
     }

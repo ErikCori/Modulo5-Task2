@@ -23,7 +23,6 @@ public class Game {
 
     //Constructor
     public Game(){
-        Date date = new Date();
     }
     public Game(int plusHours){
         int seconds = plusHours * 3600;
