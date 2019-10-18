@@ -4,7 +4,7 @@ var app = new Vue({
     el:'#app',
     data:{
         player: "",
-        gpId:[],
+        gpId: "",
         games:[],
         scores:[],
     }
@@ -110,27 +110,13 @@ function login(data){
     })
 }
 
-/*function signin(data){
-    $.post("/api/players", data)
-    .done(function(){
-        login(data);
-        location.reload();
-    })
-    .fail(function(){
-        alert("Username already exists");
-    })
-}*/
-
-/*function doSomething(){
-    alert("Haciendo algo");
-}*/
 
 function createNewGame(){
     $.post("/api/games")
-    .done(function(){
+    .done(function(data){
         alert("Game created");
         location.reload();
-        //window.location.replace("/web/game.html?gp=11");
+        window.location.replace('/web/game.html?gp=' + data.gpid);
     })
     .fail(function(){
         alert("error creating game");

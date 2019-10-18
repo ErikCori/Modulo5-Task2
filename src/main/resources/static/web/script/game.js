@@ -58,4 +58,9 @@ function isHit(shipLocation,salvoes,playerId) {
       });
   });
   return hit;
+
+  
+}
+function back(){
+  window.location.replace('/web/games.html');
 }
