@@ -29,7 +29,7 @@ fetch(url)
     done();
 })
 
-//Crear tabla de datos
+//********************************************Crear tabla de datos******************************************************
 function done(){
     var table = document.getElementById('salvo-table');
     table.innerHTML="";
@@ -38,7 +38,7 @@ function done(){
     changeForm(app.player);
     console.log(app.games);
 }
-//crear el contenido de la tabla
+//*******************************************Crear el contenido de la tabla**********************************************
 function createTableContent(games){
     var table = '<thead class="thead"><tr><th>DateGame</th><th>Player1</th><th>Player2</th><th>Status</th></tr></thead>';
     table +='<tbody>';
@@ -56,17 +56,17 @@ function createTableContent(games){
             table += '<td>'+game.gamePlayers[1].player.email+'</td>';
         }
         if(game.gamePlayers[0]== null || game.gamePlayers[1]==null){
-            table += '<td><button type="button">Join</button></td>';
+            table += '<td><button type="button data-id="'+game.id+'" id="joinButton" onclick="joinGame()">Join</button></td>';
         }
         else{
-            table += '<td><button type="button">Results</button></td>';
+            table += '<td><button type="button" data-id="'+game.id+'" id="joinButton" onclick="joinGame()">Play</button></td>';
         }
         table += '</tr>';
     });
     table += '</tbody>';
     return table;
 }
-
+//****************************************Login***********************************************************
 $("#loginButton").click(
     function(){
         data ={username: document.forms['loginForm'].elements['username'].value, 
@@ -74,7 +74,18 @@ $("#loginButton").click(
         login(data);
     }
 )
-
+function login(data){
+    $.post("/api/login", data)
+    .done(function(){
+        location.reload();
+        
+    })
+    .fail(function(){
+        alert("User does not exist");
+        location.reload();
+    })
+}
+//***************************************Logout***********************************************************
 $("#logoutButton").click(
     function(){
         $.post("/api/logout")
@@ -84,6 +95,7 @@ $("#logoutButton").click(
         })
     }
 )
+//***********************************************SigIn********************************************************
 $("#signinButton").click(
     function(){
         data = {username: document.forms['loginForm'].elements['username'].value,
@@ -97,31 +109,35 @@ $("#signinButton").click(
         })
     }
 )
-
-function login(data){
-    $.post("/api/login", data)
-    .done(function(){
-        location.reload();
-        
-    })
-    .fail(function(){
-        alert("User does not exist");
-        location.reload();
-    })
-}
-
-
+//*****************************************Create new Game ******************************************************
 function createNewGame(){
     $.post("/api/games")
     .done(function(data){
         alert("Game created");
-        location.reload();
-        window.location.replace('/web/game.html?gp=' + data.gpid);
+        redirect(data);
     })
     .fail(function(){
         alert("error creating game");
     })
 }
+function redirect(data){
+    location.reload();
+    window.location.replace('/web/game.html?gp=' + data.gpid);
+}
+//*********************************************Join/Play a Game ************************************************
+function joinGame(){
+    var idGame = document.getElementById("joinButton").getAttribute("data-id");
+    $.post('/games/'+idGame+'/players')
+    .done(function(data){
+        alert("Enter game");
+        redirect(data);
+    })
+    .fail(function(){
+        alert("error at join");
+    })
+    }
+
+//*****************************************Change Form *********************************************************
 function changeForm(player){
     if(player == null){
         $('#loginForm').show();

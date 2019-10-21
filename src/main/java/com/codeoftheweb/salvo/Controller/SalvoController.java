@@ -83,23 +83,27 @@ public class SalvoController {
     public List<Object> leaderboardView(){
         return playerRepository.findAll().stream().map(player -> player.makeTableLeaderboard()).collect(Collectors.toList());
     }
-    //Create a player
+    //********************************************  Create a player  *************************************************
     @RequestMapping(path = "/players", method = RequestMethod.POST)
-    public ResponseEntity<Map<String, Object>> createUser(@RequestParam String username, @RequestParam String password){
-        if(username.isEmpty()){
+    public ResponseEntity<Map<String, Object>> createUser(@RequestParam String username, @RequestParam String password, Authentication authentication){
+        if(!isGuest(authentication)){
+            return new ResponseEntity<>(makeMap("error", "user logged in"), HttpStatus.CONFLICT);
+        }
+        else if(username.isEmpty()){
             return new ResponseEntity<>(makeMap("Error", "no name given"), HttpStatus.FORBIDDEN);
         }
-        if(password.isEmpty()){
+        else if(password.isEmpty()){
             return new ResponseEntity<>(makeMap("Error", "no password given"), HttpStatus.FORBIDDEN);
         }
-        Player player = playerRepository.findByUsername(username);
-        if(player != null){
+        else if(playerRepository.findByUsername(username) != null){
             return new ResponseEntity<>(makeMap("Error","Username already exists"), HttpStatus.CONFLICT);
         }
-        Player newPlayer = playerRepository.save(new Player(username, password));
-        return new ResponseEntity<>(makeMap("username:", newPlayer.getUsername()), HttpStatus.CREATED);
+        else {
+            Player newPlayer = playerRepository.save(new Player(username, passwordEncoder.encode(password)));
+            return new ResponseEntity<>(makeMap("username:", newPlayer.getUsername()), HttpStatus.CREATED);
+        }
     }
-    //Create a game
+    //***************************************  Create a game  ***************************************************
     @RequestMapping(path = "/games", method = RequestMethod.POST)
     public ResponseEntity<Map<String, Object>> createGame(Authentication authentication){
         if(isGuest(authentication)){
@@ -110,10 +114,22 @@ public class SalvoController {
         GamePlayer newGamePlayer = gamePlayerRepository.save(new GamePlayer(newGame, player));
         return new ResponseEntity<>(makeMap("gpid", newGamePlayer.getId()),HttpStatus.CREATED);
     }
-    //Join Game
+    //**************************************  Join Game  *******************************************************
     @RequestMapping(path = "/games/{id}/players", method = RequestMethod.POST)
     public ResponseEntity<Map<String, Object>> joinGame(Authentication authentication, @PathVariable long id){
-
+        if(isGuest(authentication)){
+            return new ResponseEntity<>(makeMap("Error", "No player logged in"), HttpStatus.UNAUTHORIZED);
+        }
+        Game game = gameRepository.getOne(id);
+        if(game == null){
+            return new ResponseEntity<>(makeMap("Error", "No such Game"), HttpStatus.FORBIDDEN);
+        }
+        if(game.getGamePlayers().size() >= 2){
+            return new ResponseEntity<>(makeMap("Error", "Game is full"), HttpStatus.FORBIDDEN);
+        }
+        Player player = playerRepository.findByUsername(authentication.getName());
+        GamePlayer newGamePlayer = gamePlayerRepository.save(new GamePlayer(game, player));
+        return new ResponseEntity<>(makeMap("gpid", newGamePlayer.getId()), HttpStatus.CREATED);
     }
 
 
