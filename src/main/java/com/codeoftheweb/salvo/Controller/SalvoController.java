@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/api")
@@ -42,11 +43,25 @@ public class SalvoController {
         }else{
             dto.put("player", null);
         }
-        dto.put("games", gameRepository.findAll().stream().map(game -> game.makeGameDto()).collect(Collectors.toList()));
+        dto.put("games", gameRepository.findAll().stream()
+                .map(game -> game.makeGameDto()).collect(Collectors.toList()));
         return dto;
     }
     private boolean isGuest(Authentication authentication) {
         return authentication == null || authentication instanceof AnonymousAuthenticationToken;
+    }
+    //*************************************************************************************
+    @RequestMapping(path="/games/{id}/players", method = RequestMethod.GET)
+    public Map<String, Object> getPlayersInGame(Authentication authentication, @PathVariable long id){
+        Map<String, Object> dto = new LinkedHashMap<>();
+        if(!isGuest(authentication)){
+            dto.put("playerLoggedIn", playerRepository.findByUsername(authentication.getName()).makePlayerDto());
+        }else{
+            dto.put("playerLoggedIn", null);
+        }
+        dto.put("gamePlayers", gameRepository.getOne(id).getGamePlayers().stream()
+                .map(player -> player.makeGamePlayerDto()).collect(Collectors.toList()));
+        return dto;
     }
 
     @RequestMapping("/game_view/{gamePlayerId}")
@@ -120,18 +135,21 @@ public class SalvoController {
         if(isGuest(authentication)){
             return new ResponseEntity<>(makeMap("Error", "No player logged in"), HttpStatus.UNAUTHORIZED);
         }
-        Game game = gameRepository.getOne(id);
+        Game game = gameRepository.findById(id).orElse(null);
         if(game == null){
             return new ResponseEntity<>(makeMap("Error", "No such Game"), HttpStatus.FORBIDDEN);
+        }
+        Player player = playerRepository.findByUsername(authentication.getName());
+        if(game.getGamePlayers().stream().map(pl ->pl.getPlayer().getUsername()).collect(Collectors.toList()).contains(player.getUsername())){
+            return new ResponseEntity<>(makeMap("Error", "You are already a player in this game"), HttpStatus.FORBIDDEN);
         }
         if(game.getGamePlayers().size() >= 2){
             return new ResponseEntity<>(makeMap("Error", "Game is full"), HttpStatus.FORBIDDEN);
         }
-        Player player = playerRepository.findByUsername(authentication.getName());
+
         GamePlayer newGamePlayer = gamePlayerRepository.save(new GamePlayer(game, player));
         return new ResponseEntity<>(makeMap("gpid", newGamePlayer.getId()), HttpStatus.CREATED);
     }
-
 
 
     private Map<String, Object> makeMap (String key, Object value){

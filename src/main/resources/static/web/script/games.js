@@ -56,10 +56,10 @@ function createTableContent(games){
             table += '<td>'+game.gamePlayers[1].player.email+'</td>';
         }
         if(game.gamePlayers[0]== null || game.gamePlayers[1]==null){
-            table += '<td><button type="button data-id="'+game.id+'" id="joinButton" onclick="joinGame()">Join</button></td>';
+            table += '<td><button type="button" data-id="'+game.id+'" id="joinButton" onclick="joinGame(event)">Join</button></td>';
         }
         else{
-            table += '<td><button type="button" data-id="'+game.id+'" id="joinButton" onclick="joinGame()">Play</button></td>';
+            table += '<td><button type="button" data-id="'+game.id+'" id="joinButton" onclick="joinGame(event)">Play</button></td>';
         }
         table += '</tr>';
     });
@@ -125,9 +125,10 @@ function redirect(data){
     window.location.replace('/web/game.html?gp=' + data.gpid);
 }
 //*********************************************Join/Play a Game ************************************************
-function joinGame(){
-    var idGame = document.getElementById("joinButton").getAttribute("data-id");
-    $.post('/games/'+idGame+'/players')
+function joinGame(event){
+    var idGame =event.target.dataset.id;
+    console.log(idGame)
+    $.post('/api/games/'+idGame+'/players')
     .done(function(data){
         alert("Enter game");
         redirect(data);
