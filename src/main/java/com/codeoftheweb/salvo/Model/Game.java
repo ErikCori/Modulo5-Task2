@@ -4,6 +4,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Entity
@@ -48,7 +49,7 @@ public class Game {
         dto.put("id", this.getId());
         dto.put("created", this.getCreationDate());
         dto.put("gamePlayers", this.getGamePlayers().stream().map(gp -> gp.makeGamePlayerDto()));
-        dto.put("scores", this.getGamePlayers().stream().map(gp -> gp.getPlayer().makeScoredto()));
+        dto.put("scores", this.getScores().stream().map(score -> score.getScore()).collect(Collectors.toList()));
         return dto;
     }
 

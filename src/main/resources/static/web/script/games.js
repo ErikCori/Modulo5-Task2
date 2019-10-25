@@ -40,10 +40,11 @@ function done(){
 }
 //*******************************************Crear el contenido de la tabla**********************************************
 function createTableContent(games){
-    var table = '<thead class="thead"><tr><th>DateGame</th><th>Player1</th><th>Player2</th><th>Status</th></tr></thead>';
+    var table = '<thead class="thead"><tr><th></th><th>DateGame</th><th>Player1</th><th>Player2</th><th>Status</th></tr></thead>';
     table +='<tbody>';
     games.forEach(function(game){
         table += '<tr>';
+        table += '<td>'+ game.id +'</td>';
         table += '<td>'+new Date(game.created).toLocaleString()+'</td>';
         if(game.gamePlayers[0] == null){
             table += '<td>'+"N/A"+'</td>';
@@ -56,10 +57,10 @@ function createTableContent(games){
             table += '<td>'+game.gamePlayers[1].player.email+'</td>';
         }
         if(game.gamePlayers[0]== null || game.gamePlayers[1]==null){
-            table += '<td><button type="button" data-id="'+game.id+'" id="joinButton" onclick="joinGame(event)">Join</button></td>';
+            table += '<td><button type="button" class="btn-secondary" data-id="'+game.id+'" id="joinButton" onclick="joinGame(event)">Join</button></td>';
         }
         else{
-            table += '<td><button type="button" data-id="'+game.id+'" id="joinButton" onclick="joinGame(event)">Play</button></td>';
+            table += '<td><button type="button" class="btn-secondary" data-id="'+game.id+'" id="joinButton" onclick="joinGame(event)">Play</button></td>';
         }
         table += '</tr>';
     });
@@ -101,11 +102,12 @@ $("#signinButton").click(
         data = {username: document.forms['loginForm'].elements['username'].value,
                 password: document.forms['loginForm'].elements['password'].value};
         $.post("/api/players", data)
-        .done(function(){
+        .done(function(dt){
             login(data);
+            alert(dt.responseJSON.username)
         })
-        .fail(function(){
-            alert("Username already exists");
+        .fail(function(error){
+            alert(error.responseJSON.error);
         })
     }
 )
@@ -116,8 +118,8 @@ function createNewGame(){
         alert("Game created");
         redirect(data);
     })
-    .fail(function(){
-        alert("error creating game");
+    .fail(function(error){
+        alert(error.responseJSON.error);
     })
 }
 function redirect(data){
@@ -133,10 +135,11 @@ function joinGame(event){
         alert("Enter game");
         redirect(data);
     })
-    .fail(function(){
-        alert("error at join");
+    .fail(function(error){
+        alert(error.responseJSON.error);
     })
-    }
+}
+//**********************************************Play Game *******************************************************/
 
 //*****************************************Change Form *********************************************************
 function changeForm(player){
