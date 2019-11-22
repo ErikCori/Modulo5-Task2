@@ -56,11 +56,17 @@ function createTableContent(games){
         }else{
             table += '<td>'+game.gamePlayers[1].player.email+'</td>';
         }
-        if(game.gamePlayers[0]== null || game.gamePlayers[1]==null){
-            table += '<td><button type="button" class="btn-secondary" data-id="'+game.id+'" id="joinButton" onclick="joinGame(event)">Join</button></td>';
-        }
-        else{
-            table += '<td><button type="button" class="btn-secondary" data-id="'+game.id+'" id="joinButton" onclick="joinGame(event)">Play</button></td>';
+        if(app.player != null){
+            //Si hay estoy en el juego
+            if(game.gamePlayers[0].player.id == app.player.id || game.gamePlayers[1] && game.gamePlayers[1].player.id == app.player.id){
+                var gamePlayerId = game.gamePlayers[0].player.id == app.player.id ? game.gamePlayers[0].id : game.gamePlayers[1].id;
+                    
+                table += '<td><button type="button" class="btn-secondary" data-id="'+gamePlayerId+'" id="playButton" onclick="playGame(event)">Play</button></td>';
+            }else{
+                if(game.gamePlayers.length == 1){ //Hay uno esperando por mi
+                    table += '<td><button type="button" class="btn-secondary" data-id="'+game.id+'" id="joinButton" onclick="joinGame(event)">Join</button></td>';
+                }
+            }
         }
         table += '</tr>';
     });
@@ -140,7 +146,10 @@ function joinGame(event){
     })
 }
 //**********************************************Play Game *******************************************************/
-
+function playGame(event){
+    var gpId = event.target.dataset.id;
+    window.location.replace('/web/game.html?gp=' + gpId);
+}
 //*****************************************Change Form *********************************************************
 function changeForm(player){
     if(player == null){
